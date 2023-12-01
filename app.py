@@ -28,6 +28,8 @@ st.write('\n')
 # Display a web link
 st.markdown('[Click here](https://docs.google.com/spreadsheets/d/1_IVksfmKi8lxfHcUD-qgFm-vPgqTXohnld9FkTa-4HE/edit?usp=sharing) to see our lab schedule.')
 st.markdown('[Click here](https://docs.google.com/spreadsheets/d/1YY7TXEHvCvMn-DkrQDjyUXLIO1fnPV7xlOb-NvwHtwo/edit?usp=sharing) to see detail information of each lab.')
+st.write("If you have any questions, feel free to contact our secretary, Ms. Chheang Sreypich via 096 76 11 471 .")
+
 
 # Convert dataframe to dictionnary
 data = df.to_dict(orient='list')
@@ -42,13 +44,13 @@ t_out = st.sidebar.text_input("Enter time out:")
 
 # Custom CSS to style the button area
 button_area_css = """
-<style>
-div.stButton > button {
-    background-color: blue;
-    color: white;
-}
-</style>
-"""
+    <style>
+    div.stButton > button {
+        background-color: blue;
+        color: white;
+    }
+    </style>
+    """
 
 # Apply the custom CSS
 st.markdown(button_area_css, unsafe_allow_html=True)
@@ -70,12 +72,12 @@ if bu:
     df_updated.to_excel('current_stat.xlsx', index=False)
 
     # this section is for creating log file
-    log_dic = {'Date': [current_date.strftime('%d-%B-%Y')], 'Lab':[room], 'Name': [name], 'Student ID': [s_id], 'Phone Number': [p_no], 'Time In': [t_in], 'Time Out': [t_out]}
+    log_dic = {'Date': [current_date], 'Lab':[room], 'Name': [name], 'Student ID': [s_id], 'Phone Number': [p_no], 'Time In': [t_in], 'Time Out': [t_out]}
     log_df = pd.DataFrame(log_dic) 
     existing_file_path = 'log.xlsx'
     # Check if the file already exists
     try:
-        # Read the existing Excel file
+         # Read the existing Excel file
         existing_df = pd.read_excel(existing_file_path)
         # Append new data to the existing DataFrame
         updated_df = existing_df.append(log_df, ignore_index=True)
@@ -88,7 +90,7 @@ if bu:
     # Refresh page
     st.experimental_rerun()
 
-    
+        
 st.sidebar.markdown("<h2 style='color: red;'>This section is for AMS admins only!</h2>", unsafe_allow_html=True)
 
 st.sidebar.write("Select lab room that you want to reset")
@@ -119,7 +121,22 @@ elif (username in valid_users and password == valid_users[username]) and r_bu:
     df_updated.to_excel('current_stat.xlsx', index=False)
     # Refresh page
     st.experimental_rerun()
- 
+
+
+l_bu = st.sidebar.button("See logs")
+
+if ((username not in valid_users) or (password != valid_users[username])) and l_bu:
+    st.sidebar.error("Login Failed!") 
+elif (username in valid_users and password == valid_users[username]) and l_bu:
+    st.title("AMS Lab Logs")
+    log_df = pd.read_excel('log.xlsx', na_filter=False)
+
+    # Sort DataFrame by the 'date_column' in descending order (latest to oldest)
+    df_sorted = log_df.sort_values(by='Date', ascending=False)
+
+    st.markdown(df_sorted.to_html(index=False), unsafe_allow_html=True)
+
+    
 
 
 
